@@ -16,7 +16,7 @@ on:
 jobs:
   Premium-RDP-Setup:
     runs-on: windows-latest
-    timeout-minutes: 940
+    timeout-minutes: 340
     
     steps:
       # BANNER CHÀO MỪNG
@@ -120,7 +120,7 @@ jobs:
           
           # Xóa user cũ nếu tồn tại
           try {
-              Remove-LocalUser -Name "Admin" -ErrorAction SilentlyContinue
+              Remove-LocalUser -Name "AISTV-PREMIUM" -ErrorAction SilentlyContinue
               Write-Host "│ ✅ Đã xóa user cũ" -ForegroundColor Green
           } catch {
               Write-Host "│ ℹ️  Không có user cũ để xóa" -ForegroundColor Blue
@@ -128,23 +128,23 @@ jobs:
           
           # Tạo user mới với đầy đủ quyền
           try {
-              New-LocalUser -Name "Admin" -Password $securePass -AccountNeverExpires -Description "AI STV Premium Account"
+              New-LocalUser -Name "AISTV-PREMIUM" -Password $securePass -AccountNeverExpires -Description "AI STV Premium Account"
               Write-Host "│ ✅ Đã tạo user mới" -ForegroundColor Green
               
               # Đặt password không bao giờ hết hạn (dùng Set-LocalUser nếu cần)
               try {
-                  Set-LocalUser -Name "Admin" -PasswordNeverExpires $true -ErrorAction SilentlyContinue
+                  Set-LocalUser -Name "AISTV-PREMIUM" -PasswordNeverExpires $true -ErrorAction SilentlyContinue
               } catch {
                   # Nếu môi trường không hỗ trợ Set-LocalUser, bỏ qua an toàn
               }
 
               # Thêm vào các nhóm cần thiết
-              Add-LocalGroupMember -Group "Administrators" -Member "Admin" -ErrorAction SilentlyContinue
-              Add-LocalGroupMember -Group "Remote Desktop Users" -Member "Admin" -ErrorAction SilentlyContinue
-              Add-LocalGroupMember -Group "Users" -Member "Admin" -ErrorAction SilentlyContinue
+              Add-LocalGroupMember -Group "Administrators" -Member "AISTV-PREMIUM" -ErrorAction SilentlyContinue
+              Add-LocalGroupMember -Group "Remote Desktop Users" -Member "AISTV-PREMIUM" -ErrorAction SilentlyContinue
+              Add-LocalGroupMember -Group "Users" -Member "AISTV-PREMIUM" -ErrorAction SilentlyContinue
               
               # Kích hoạt user
-              Enable-LocalUser -Name "Admin"
+              Enable-LocalUser -Name "AISTV-PREMIUM"
               
               Write-Host "│ ✅ Đã cấp quyền Administrator & RDP" -ForegroundColor Green
               
@@ -167,7 +167,7 @@ jobs:
           Write-Host "🔍 KIỂM TRA QUYỀN ĐĂNG NHẬP" -ForegroundColor Yellow
           
           # Kiểm tra user tồn tại
-          $user = Get-LocalUser -Name "Admin" -ErrorAction SilentlyContinue
+          $user = Get-LocalUser -Name "AISTV-PREMIUM" -ErrorAction SilentlyContinue
           if ($user) {
               Write-Host "│ ✅ User AISTV-PREMIUM tồn tại" -ForegroundColor Green
               Write-Host "│ 📊 Trạng thái: $($user.Enabled)" -ForegroundColor White
@@ -177,7 +177,7 @@ jobs:
           }
           
           # Kiểm tra quyền Administrator
-          $isAdmin = (Get-LocalGroupMember -Group "Administrators" | Where-Object {$_.Name -like "*Admin"}).Count -gt 0
+          $isAdmin = (Get-LocalGroupMember -Group "Administrators" | Where-Object {$_.Name -like "*AISTV-PREMIUM"}).Count -gt 0
           if ($isAdmin) {
               Write-Host "│ ✅ Có quyền Administrator" -ForegroundColor Green
           } else {
@@ -185,7 +185,7 @@ jobs:
           }
           
           # Kiểm tra quyền Remote Desktop
-          $isRDPUser = (Get-LocalGroupMember -Group "Remote Desktop Users" | Where-Object {$_.Name -like "*Admin"}).Count -gt 0
+          $isRDPUser = (Get-LocalGroupMember -Group "Remote Desktop Users" | Where-Object {$_.Name -like "*AISTV-PREMIUM"}).Count -gt 0
           if ($isRDPUser) {
               Write-Host "│ ✅ Có quyền Remote Desktop" -ForegroundColor Green
           } else {
@@ -281,7 +281,7 @@ jobs:
           Write-Host "│              🎉 KẾT NỐI THÀNH CÔNG!              │" -ForegroundColor Cyan
           Write-Host "├───────────────────────────────────────────┤" -ForegroundColor Cyan
           Write-Host "│ 🌐  Địa chỉ: $env:TAILSCALE_IP" -ForegroundColor White
-          Write-Host "│ 👤  Tài khoản:(Admin) AISTV-PREMIUM" -ForegroundColor White
+          Write-Host "│ 👤  Tài khoản: AISTV-PREMIUM" -ForegroundColor White
           Write-Host "│ 🔐  Mật khẩu: $matKhau" -ForegroundColor White
           Write-Host "│ ⏰  Thời lượng: $displayTime" -ForegroundColor White
           Write-Host "│ 🕐  Bắt đầu: $($thoiGianBatDau.ToString('HH:mm:ss'))" -ForegroundColor White
